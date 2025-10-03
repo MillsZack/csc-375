@@ -39,22 +39,22 @@ public class FactoryGA {
         geneticAlgorithm.generations = generations;
         geneticAlgorithm.numTypes = numTypes;
         
-        Layout best = geneticAlgorithm.run(numStations, width, height);
         
-        System.out.println("Best fitness score: " + best.getFitness());
-        
-        SwingUtilities.invokeLater(() -> {
+       
             JFrame frame = new JFrame("Visualize Layout");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             
-            UI panel = new UI(best);
+            UI panel = new UI(new Layout());
             frame.add(panel);
             
             frame.setSize(600, 600);
             frame.setVisible(true);
             
-         
-    });
+            
+            Layout best = geneticAlgorithm.run(numStations, width, height, panel);
+            System.out.println("Best fitness score: " + best.getFitness());
+            SwingUtilities.invokeLater(() -> panel.updateLayout(best));
+   
     }
         
         

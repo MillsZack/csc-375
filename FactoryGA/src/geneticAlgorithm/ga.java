@@ -1,5 +1,6 @@
 package geneticAlgorithm;
 
+import UserInterface.UI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -7,7 +8,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JFrame;
 import static javax.swing.Spring.height;
+import javax.swing.SwingUtilities;
 import model.Layout;
 import model.Spot;
 import model.Stations;
@@ -147,7 +150,29 @@ public class ga {
     
     } 
     
-    public Layout run(int numStations, int width, int height) throws InterruptedException {
+    private Layout getBestLayout(List<Layout> population) {
+        Layout best = null;
+        double bestFitness = Double.NEGATIVE_INFINITY;
+        for (Layout layout : population) {
+            if (layout.getFitness() > bestFitness) {
+            best = layout;
+            bestFitness = layout.getFitness();
+            }
+        }
+        return best;
+    }
+    
+    private void displayLayout(Layout layout) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Generation Progress - Fitness: " + layout.getFitness());
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.add(new UI(layout));
+            frame.setSize(600, 600);
+            frame.setVisible(true);
+        });
+    }
+    
+    public Layout run(int numStations, int width, int height, UI ui) throws InterruptedException {
         this.stations = createStations(numStations);
         
         List<Layout> population = generateRandomList(stations, width, height);
@@ -170,7 +195,13 @@ public class ga {
             population = newList;
             fitnessPhaser(population, stations);
             
+            Layout currentBest = getBestLayout(population);
+            System.out.println("Generation " + (i + 1) + " - Best Fitness: " + currentBest.getFitness());
+            displayLayout(currentBest);
+            Thread.sleep(500);
+            
         }
+        
         
         Layout best = null;
         double score = Double.NEGATIVE_INFINITY;

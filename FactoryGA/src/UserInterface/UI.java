@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Map;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import model.Layout;
 import model.Spot;
 import model.Stations;
@@ -58,10 +59,13 @@ public class UI extends JPanel {
             
         }
     }
-    public void updateLayout(Layout updated){
-        this.layout = updated;
+    
+    public void updateLayout(Layout newLayout) {
+    SwingUtilities.invokeLater(() -> {
+        this.layout = newLayout;
         repaint();
-    }
+    });
+}
     
       
     
